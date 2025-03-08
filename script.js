@@ -1,6 +1,7 @@
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
 const scoreDisplay = document.getElementById('score');
+const startButton = document.getElementById('start-button');
 
 const gridSize = 20;
 let snake = [{ x: 10, y: 10 }];
@@ -9,6 +10,7 @@ let dx = 1;
 let dy = 0;
 let score = 0;
 let gameInterval;
+let gameRunning = false; // 添加一个标志，表示游戏是否正在运行
 
 function draw() {
     // 清空画布
@@ -26,6 +28,8 @@ function draw() {
 }
 
 function update() {
+    if (!gameRunning) return; // 如果游戏没有运行，则不更新
+
     const head = { x: snake[0].x + dx, y: snake[0].y + dy };
 
     // 检查是否吃到食物
@@ -68,14 +72,19 @@ function gameOver() {
     dy = 0;
     score = 0;
     scoreDisplay.textContent = `分数: ${score}`;
-    startGame();
+    gameRunning = false;
+    startButton.style.display = 'block'; // 显示开始按钮
 }
 
 function startGame() {
+    gameRunning = true;
+    startButton.style.display = 'none'; // 隐藏开始按钮
     gameInterval = setInterval(update, 100);
 }
 
 document.addEventListener('keydown', event => {
+    if (!gameRunning) return; // 如果游戏没有运行，则不响应按键
+
     switch (event.key) {
         case 'ArrowUp':
             if (dy !== 1) { dx = 0; dy = -1; }
@@ -92,4 +101,8 @@ document.addEventListener('keydown', event => {
     }
 });
 
-startGame();
+startButton.addEventListener('click', () => {
+    if (!gameRunning){
+        startGame();
+    }
+});
